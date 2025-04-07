@@ -1,0 +1,46 @@
+# codemagic.yaml
+
+workflows:
+  ios:
+    name: Build iOS App
+    max_build_duration: 60 # You can adjust the maximum build time if needed
+    environment:
+      flutter: stable # Define Flutter version
+      sdk: '>=3.2.0 <4.0.0' # Ensure the SDK matches your project
+      ios:
+        version: latest-stable
+        sdk: latest
+    platforms:
+      ios:
+        # iOS specific dependencies and version handling
+        xcode: latest
+        signing:
+          # Codemagic will automatically handle the signing if you provide the appropriate API credentials
+          use_apple_signing: true
+          apple_team_id: YOUR_APPLE_TEAM_ID
+          api_key: YOUR_API_KEY_PATH
+          api_key_id: YOUR_API_KEY_ID
+          issuer_id: YOUR_ISSUER_ID
+
+    steps:
+      - checkout:
+          fetch_depth: 3 # To ensure a clean checkout of the repository
+      - flutter-install:
+          version: stable
+      - flutter-pub-get:
+      - flutter-build:
+          ios: true
+      - flutter-test:
+          ios: true
+      - upload-artifacts:
+          - build/ios/iphoneos/*.ipa
+          - build/ios/iphonesimulator/*.app
+          
+    post:
+      - deploy:
+          ios:
+            app_store_connect:
+              app_id: YOUR_APP_ID
+              api_key_path: YOUR_API_KEY_PATH
+              api_key_id: YOUR_API_KEY_ID
+              issuer_id: YOUR_ISSUER_ID
