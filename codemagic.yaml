@@ -1,33 +1,22 @@
 workflows:
-  ios:
-    name: Build iOS App
-    max_build_duration: 60 # You can adjust the maximum build time if needed
+  ios-workflow:
+    name: iOS Release Workflow
+    max_build_duration: 60
     environment:
-      flutter: stable # Define Flutter version
-      xcode: latest # Use the latest version of Xcode
-      cocoapods: default # Use default CocoaPods version (optional)
-    platforms:
-      ios:
-        # Build for iOS platform
-        build_mode: release
-        signing:
-          use_apple_signing: true
-          apple_team_id: YOUR_APPLE_TEAM_ID
-          api_key_path: YOUR_API_KEY_PATH
-          api_key_id: YOUR_API_KEY_ID
-          issuer_id: YOUR_ISSUER_ID
-
-    steps:
-      - checkout:
-          fetch_depth: 3 # To ensure a clean checkout of the repository
-      - flutter-install:
-          version: stable
-      - flutter-pub-get:
-      - flutter-build:
-          ios: true
-      - flutter-test:
-          ios: true
-          
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+      vars:
+        APP_NAME: "sixam_mart"
+        BUNDLE_ID: "com.jolouser.app"
+    scripts:
+      - name: Install dependencies
+        script: flutter pub get
+      - name: Build .ipa for release
+        script: flutter build ipa --release
     artifacts:
-      - build/ios/iphoneos/*.ipa
-      - build/ios/iphonesimulator/*.app
+      - build/ios/ipa/*.ipa
+    publishing:
+      email:
+        recipients:
+          - madigitals2020@gmail.com
